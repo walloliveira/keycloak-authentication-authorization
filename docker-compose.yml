@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+  keycloak:
+    build:
+      context: ./keycloak
+      dockerfile: Dockerfile
+    env_file:
+      - ./keycloak/.keycloak.env
+    ports:
+      - 9091:8080
+    depends_on:
+      - pg_database
+    command: ["start-dev"]
+  pg_database:
+    image: postgres:15.1-alpine
+    env_file:
+      - .database.env
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_database_vm:/var/lib/postgresql/data
+volumes:
+  pg_database_vm:
