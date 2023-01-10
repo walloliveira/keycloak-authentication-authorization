@@ -5,7 +5,7 @@ services:
       context: ./keycloak
       dockerfile: Dockerfile
     env_file:
-      - ./keycloak/.keycloak.env
+      - ./keycloak/.env
     ports:
       - 9091:8080
     depends_on:
@@ -14,7 +14,7 @@ services:
   pg_database:
     image: postgres:15.1-alpine
     env_file:
-      - .database.env
+      - ./database/.env
     ports:
       - 5432:5432
     volumes:
