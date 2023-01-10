@@ -1,0 +1,15 @@
+server:
+  port: 9090
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: keycloak-authentication-authorization
+            authorization-grant-type: authorization_code
+            scope: openid
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:9091/realms/development
+            user-name-attribute: preferred_username
