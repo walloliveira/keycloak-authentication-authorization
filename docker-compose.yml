@@ -8,6 +8,7 @@ services:
       - ./keycloak/.env
     ports:
       - 9091:8080
+      - 9092:8443
     depends_on:
       - pg_database
     command: ["start-dev"]
