@@ -1,13 +1,16 @@
 package com.walloliveira.portifolio.keycloakauthenticationauthorization.color;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/v1/colors")
-public class ColorResource {
+public final class ColorResource {
     ArrayList<Color> colors = new ArrayList<>();
 
     ColorResource() {
@@ -16,14 +19,35 @@ public class ColorResource {
     }
 
     @GetMapping
-    public ListResponse list() {
-        return new ListResponse(colors);
+    public ResponseEntity<ListResponse> list() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ListResponse(colors));
     }
 
     @PostMapping
-    public Color create(@RequestBody NewColor newColor) {
+    public ResponseEntity<Color> create(@RequestBody NewColor newColor) {
         final var color = newColor.toColor();
         colors.add(color);
-        return color;
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(color);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id, @RequestBody NewColor newColor) {
+        final var colorsFounded = colors
+                .stream()
+                .filter(color -> color.getId().equalsIgnoreCase(id))
+                .toList();
+        if (colorsFounded.size() == 1) {
+            final var colorFounded = colorsFounded.get(0);
+            colors.remove(colorFounded);
+        } else {
+            throw new InvalidParameterException("ID not found");
+        }
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }

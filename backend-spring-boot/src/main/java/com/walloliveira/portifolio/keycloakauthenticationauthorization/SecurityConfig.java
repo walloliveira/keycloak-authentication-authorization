@@ -12,7 +12,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+class SecurityConfig {
 
     private final KeycloakLogoutHandler keycloakLogoutHandler;
 
@@ -30,6 +30,12 @@ public class SecurityConfig {
         http.authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST, "/v1/colors")
                 .hasRole("USER")
+                .and()
+                .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.DELETE, "/v1/colors")
+                .hasRole("ADMIN")
+                .and()
+                .authorizeHttpRequests()
                 .anyRequest()
                 .permitAll();
         http.oauth2Login()
