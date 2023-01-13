@@ -1,7 +1,7 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.1"
-	id("io.spring.dependency-management") version "1.1.0"
+	id("org.springframework.boot") version "2.7.7"
+	id("io.spring.dependency-management") version "1.0.15.RELEASE"
 }
 
 group = "com.walloliveira.portifolio"
@@ -18,10 +18,15 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+	imports {
+		mavenBom("org.keycloak.bom:keycloak-adapter-bom:20.0.3")
+	}
+}
+
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	implementation("org.keycloak:keycloak-spring-boot-starter")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

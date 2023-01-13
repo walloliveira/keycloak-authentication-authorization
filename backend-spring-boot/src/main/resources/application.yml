@@ -1,15 +1,28 @@
 server:
   port: 9090
-spring:
-  security:
-    oauth2:
-      client:
-        registration:
-          keycloak:
-            client-id: keycloak-authentication-authorization
-            authorization-grant-type: authorization_code
-            scope: openid
-        provider:
-          keycloak:
-            issuer-uri: http://localhost:9091/realms/development
-            user-name-attribute: preferred_username
+keycloak:
+  realm: development
+  auth-server-url: http://localhost:9091
+  ssl-required: external
+  resource: keycloak-authentication-authorization
+  credentials:
+    secret: 0F6Tp5GEQ5BTkKB50ctBZ6of58MEJQjk
+  security-constraints:
+    - auth-roles:
+        - ADMIN
+      security-collections:
+        - name: admin stuff
+          patterns:
+            - /v1/colors/*
+          methods:
+            - GET
+            - DELETE
+    - auth-roles:
+        - USER
+      security-collections:
+        - name: user stuff
+          patterns:
+            - /v1/colors/*
+          methods:
+            - GET
+            - POST
