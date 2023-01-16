@@ -1,4 +1,4 @@
-package com.walloliveira.portifolio.keycloakauthenticationauthorization.color;
+package com.walloliveira.portifolio.keycloakauthenticationauthorization.v1.color;
 
 import java.util.UUID;
 
