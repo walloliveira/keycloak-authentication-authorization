@@ -5,8 +5,6 @@ keycloak:
   auth-server-url: http://localhost:9091
   ssl-required: external
   resource: keycloak-authentication-authorization
-  credentials:
-    secret: 0F6Tp5GEQ5BTkKB50ctBZ6of58MEJQjk
   security-constraints:
     - auth-roles:
         - ADMIN

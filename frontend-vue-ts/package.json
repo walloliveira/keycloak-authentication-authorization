@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "bulma": "^0.9.4",
+    "keycloak-js": "^20.0.3",
     "vue": "^3.2.45"
   },
   "devDependencies": {
