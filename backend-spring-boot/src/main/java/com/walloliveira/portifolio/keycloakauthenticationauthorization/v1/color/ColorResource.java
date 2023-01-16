@@ -1,34 +1,33 @@
-package com.walloliveira.portifolio.keycloakauthenticationauthorization.color;
+package com.walloliveira.portifolio.keycloakauthenticationauthorization.v1.color;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
-import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/v1/colors")
 public final class ColorResource {
-    ArrayList<Color> colors = new ArrayList<>();
 
-    ColorResource() {
-        colors.add(new Color(UUID.randomUUID().toString(), "green", "#32a852"));
-        colors.add(new Color(UUID.randomUUID().toString(), "red", "#9c1616"));
+    private final ColorRepository repository;
+
+    ColorResource(ColorRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping
     public ResponseEntity<ListResponse> list() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ListResponse(colors));
+                .body(new ListResponse(this.repository.findAll()));
     }
 
     @PostMapping
     public ResponseEntity<Color> create(@RequestBody NewColor newColor) {
         final var color = newColor.toColor();
-        colors.add(color);
+        this.repository.save(color);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(color);
@@ -36,13 +35,9 @@ public final class ColorResource {
 
     @DeleteMapping(path = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id, @RequestBody NewColor newColor) {
-        final var colorsFounded = colors
-                .stream()
-                .filter(color -> color.getId().equalsIgnoreCase(id))
-                .toList();
-        if (colorsFounded.size() == 1) {
-            final var colorFounded = colorsFounded.get(0);
-            colors.remove(colorFounded);
+        final var colorFounded = this.repository.findById(id);
+        if (colorFounded.isPresent()) {
+            this.repository.remove(colorFounded.get());
         } else {
             throw new InvalidParameterException("ID not found");
         }
