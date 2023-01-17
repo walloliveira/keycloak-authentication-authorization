@@ -2,7 +2,6 @@ import { createApp } from "vue";
 import Keycloak from "keycloak-js";
 import App from "./App.vue";
 import "./app.css";
-import store from "./stores/auth-store";
 
 const initKeycloak = () => {
   const keycloak = new Keycloak({
@@ -15,9 +14,6 @@ const initKeycloak = () => {
       onLoad: "login-required",
     })
     .then(() => {
-      store.authToken = keycloak.token!;
-      store.isAuthenticated = keycloak.authenticated!;
-      console.log(store);
       createApp(App).mount("#app");
     })
     .catch((err) => {
