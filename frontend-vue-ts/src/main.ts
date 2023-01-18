@@ -2,6 +2,8 @@ import { createApp } from "vue";
 import Keycloak from "keycloak-js";
 import App from "./App.vue";
 import "./app.css";
+import { setKeycloak } from "./stores/AuthStore";
+import FontAwesomeIcon from "./plugins/Icons";
 
 const initKeycloak = () => {
   const keycloak = new Keycloak({
@@ -14,7 +16,10 @@ const initKeycloak = () => {
       onLoad: "login-required",
     })
     .then(() => {
-      createApp(App).mount("#app");
+      setKeycloak(keycloak);
+      createApp(App)
+        .component("font-awesome-icon", FontAwesomeIcon)
+        .mount("#app");
     })
     .catch((err) => {
       console.log(err);

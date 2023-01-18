@@ -3,9 +3,10 @@ import ColorView from "./views/ColorView.vue";
 </script>
 
 <template>
-  <header>
-    <div class="is-flex is-justify-content-center">
-      <h1 class="title is-1">Colors</h1>
+  <header class="container mt-1">
+    <div class="is-flex is-justify-content-center is-align-content-center">
+      <font-awesome-icon class="title is-3" icon="fa-wand-sparkles" />
+      <span class="title is-3">Keycloak authentication and authorization</span>
     </div>
   </header>
   <main class="container mt-6">

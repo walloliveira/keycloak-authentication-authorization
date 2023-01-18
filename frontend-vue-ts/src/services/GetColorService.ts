@@ -1,8 +1,8 @@
 import { ListOfColors } from "../domains/ListOfColors";
-import http from "../plugins/http";
+import Http from "../plugins/Http";
 
 const list = async () => {
-  const response = await http.get<ListOfColors>("/v1/colors");
+  const response = await Http.get<ListOfColors>("/v1/colors");
   return response.data;
 };
 

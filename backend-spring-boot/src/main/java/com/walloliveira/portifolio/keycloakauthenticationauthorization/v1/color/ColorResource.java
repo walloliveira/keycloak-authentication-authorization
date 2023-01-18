@@ -9,6 +9,7 @@ import java.security.InvalidParameterException;
 
 @RestController
 @RequestMapping("/v1/colors")
+@CrossOrigin("*")
 public final class ColorResource {
 
     private final ColorRepository repository;
