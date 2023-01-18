@@ -1,9 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import ColorView from "./views/ColorView.vue";
+</script>
 
 <template>
-  <section class="container">
-    <div class="container">
-      <h1 class="title">Hello world</h1>
+  <header class="container mt-1">
+    <div class="is-flex is-justify-content-center is-align-content-center">
+      <font-awesome-icon class="title is-3" icon="fa-wand-sparkles" />
+      <span class="title is-3">Keycloak authentication and authorization</span>
     </div>
-  </section>
+  </header>
+  <main class="container mt-6">
+    <ColorView />
+  </main>
 </template>

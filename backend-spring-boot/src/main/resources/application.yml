@@ -4,6 +4,7 @@ keycloak:
   realm: development
   auth-server-url: http://localhost:9091
   ssl-required: external
+  bearer-only: true
   resource: keycloak-authentication-authorization
   security-constraints:
     - auth-roles:
