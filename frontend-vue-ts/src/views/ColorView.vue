@@ -3,9 +3,9 @@ import { onBeforeMount, ref } from "vue";
 import { ListOfColors } from "../domains/ListOfColors";
 import GetColorService from "../services/GetColorService";
 
-const listOfColors = ref({
+const listOfColors = ref<ListOfColors>({
   data: [],
-} as ListOfColors);
+});
 
 onBeforeMount(() => {
   GetColorService.list().then((response) => (listOfColors.value = response));
