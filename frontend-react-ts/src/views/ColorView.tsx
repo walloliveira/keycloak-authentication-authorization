@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ListOfColors } from "../domains/ListOfColors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import GetColorService from "../services/GetColorService";
 
 const ColorView = () => {
   const [listOfColors, setListOfColors] = useState<ListOfColors>({
     data: [],
   });
-
+  useEffect(() => {
+    GetColorService.list().then((value) => setListOfColors(value));
+  }, []);
   let content;
   if (listOfColors.data.length) {
     content = (
@@ -20,21 +23,19 @@ const ColorView = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            {listOfColors.data.map(({ name, hex }) => (
-              <>
-                <th>{name}</th>
-                <th>{hex}</th>
-                <th>
-                  <button className="button is-danger">
-                    <span className="icon">
-                      <FontAwesomeIcon icon={faTrash} />
-                    </span>
-                  </button>
-                </th>
-              </>
-            ))}
-          </tr>
+          {listOfColors.data.map(({ name, hex }) => (
+            <tr key={name}>
+              <th>{name}</th>
+              <th>{hex}</th>
+              <th>
+                <button className="button is-danger">
+                  <span className="icon">
+                    <FontAwesomeIcon icon={faTrash} />
+                  </span>
+                </button>
+              </th>
+            </tr>
+          ))}
         </tbody>
       </table>
     );

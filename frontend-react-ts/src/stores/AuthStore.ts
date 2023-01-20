@@ -1,20 +1,15 @@
-import { configureStore, createAction, createSlice } from "@reduxjs/toolkit";
-import Keycloak from "keycloak-js";
+import { configureStore } from "@reduxjs/toolkit";
+import AuthSlice from "./AuthSlice";
 
-type AuthKeycloak = {};
-
-const authSlice = createSlice({
-  name: "authSlice",
-  initialState: {
-    token: "",
+export default configureStore({
+  reducer: {
+    auth: AuthSlice,
   },
-  reducers: {
-    setKeycloak(state, { payload }) {
-      state.token = payload;
-    },
-  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActionPaths: ["payload"],
+        ignoredPaths: ["auth.keycloak"],
+      },
+    }),
 });
-
-export const { setKeycloak } = authSlice.actions;
-
-export default authSlice.reducer;

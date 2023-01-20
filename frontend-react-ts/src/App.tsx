@@ -2,16 +2,15 @@ import { faWandSparkles } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ColorView from "./views/ColorView";
 import Keycloak from "keycloak-js";
-import { setKeycloak } from "./stores/AuthStore";
-import store from "./stores/store";
+import { setKeycloak } from "./stores/AuthSlice";
+import AuthStore from "./stores/AuthStore";
 
 interface AppProps {
   keycloak: Keycloak;
 }
 
 const App = ({ keycloak }: AppProps) => {
-  store.dispatch(setKeycloak(keycloak.token));
-  console.log(store.getState());
+  AuthStore.dispatch(setKeycloak(keycloak));
   return (
     <>
       <header className="container mt-1">
