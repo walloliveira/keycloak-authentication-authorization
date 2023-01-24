@@ -1,16 +1,45 @@
-import { useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  FormEvent,
+  useEffect,
+  useState,
+} from "react";
 import { ListOfColors } from "../domains/ListOfColors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import GetColorService from "../services/GetColorService";
+import CreationModal from "../components/CreationModal";
+import { NewColor } from "../domains/NewColor";
 
 const ColorView = () => {
   const [listOfColors, setListOfColors] = useState<ListOfColors>({
     data: [],
   });
+  const [isModalOpened, setIsModalOpened] = useState(false);
+  const [newColor, setNewColor] = useState<NewColor>({
+    name: "",
+    hex: "",
+  });
+
   useEffect(() => {
     GetColorService.list().then((value) => setListOfColors(value));
   }, []);
+
+  const openCreationModal = () => setIsModalOpened(true);
+
+  const save = () => {
+    console.warn({ newColor });
+  };
+  const closeModal = () => setIsModalOpened(false);
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setNewColor((pre) => ({
+      ...pre,
+      [name]: value,
+    }));
+  };
   let content;
   if (listOfColors.data.length) {
     content = (
@@ -47,11 +76,48 @@ const ColorView = () => {
       </section>
     );
   }
-
+  const creationColorForm = (
+    <>
+      <div className="field">
+        <label className="label">Name</label>
+        <div className="control">
+          <input
+            type="text"
+            className="input"
+            name="name"
+            onChange={handleChange}
+            value={newColor.name}
+          />
+        </div>
+      </div>
+      <div className="field">
+        <label className="label">Hex</label>
+        <div className="control">
+          <input
+            type="text"
+            className="input"
+            name="hex"
+            onChange={handleChange}
+            value={newColor.hex}
+          />
+        </div>
+      </div>
+    </>
+  );
   return (
     <>
+      <CreationModal
+        isOpen={isModalOpened}
+        title="Create a new color"
+        onSave={save}
+        onCancel={closeModal}
+        children={creationColorForm}
+      ></CreationModal>
       <div className="is-flex is-justify-content-end">
-        <button className="button is-primary is-large is-rounded">
+        <button
+          className="button is-primary is-large is-rounded"
+          onClick={openCreationModal}
+        >
           <span className="icon">
             <FontAwesomeIcon icon={faPlus} />
           </span>
