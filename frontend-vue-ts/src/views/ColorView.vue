@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue";
-import { ListOfColors } from "../domains/ListOfColors";
-import GetColorService from "../services/GetColorService";
+import { onBeforeMount, ref, watch } from "vue";
 import CreationModal from "../components/CreationModal.vue";
+import ConfirmationModal from "../components/ConfirmationModal.vue";
+import { Color } from "../domains/Color";
+import { ListOfColors } from "../domains/ListOfColors";
 import { NewColor } from "../domains/NewColor";
 import CreateColorService from "../services/CreateColorService";
-import { Color } from "../domains/Color";
+import GetColorService from "../services/GetColorService";
+import ModalStore from "../stores/ModalStore";
+import RemoveColorService from "../services/RemoveColorService";
 
 const initNewColor = { name: "", hex: "" };
 
@@ -13,22 +16,21 @@ const listOfColors = ref<ListOfColors>({
   data: [],
 });
 
-const isModalOpened = ref(false);
-
 const newColor = ref<NewColor>({ ...initNewColor });
+
+const reason = ref("");
 
 const colorsCreatedNow = ref<Color[]>([]);
 
-const creationModalClass = computed(() =>
-  isModalOpened.value ? "is-active" : ""
-);
+const colorToRemove = ref<Color>();
 
 const onOpenCreationModal = () => {
-  isModalOpened.value = true;
+  ModalStore.isCreationOpen = true;
 };
 
-const closeModal = () => {
-  isModalOpened.value = !isModalOpened.value;
+const closeModals = () => {
+  ModalStore.isCreationOpen = false;
+  ModalStore.isConfirmationOpen = false;
   newColor.value = { ...initNewColor };
 };
 
@@ -46,8 +48,27 @@ const save = () => {
   CreateColorService.exec(newColor.value).then((color) => {
     fetchColors();
     colorsCreatedNow.value.push(color);
-    closeModal();
+    closeModals();
   });
+};
+
+const confirmRemoving = () => {
+  RemoveColorService.perform(colorToRemove.value!)
+    .then(() => {
+      fetchColors();
+      colorToRemove.value = undefined;
+    })
+    .catch((r) => {
+      reason.value = r;
+      setTimeout(() => {
+        reason.value = "";
+      }, 3000);
+    });
+};
+
+const removeColor = (color: Color) => {
+  colorToRemove.value = color;
+  ModalStore.isConfirmationOpen = true;
 };
 
 onBeforeMount(() => fetchColors());
@@ -66,10 +87,9 @@ onBeforeMount(() => fetchColors());
     </button>
   </div>
   <CreationModal
-    :class="creationModalClass"
     title="Create a new color"
-    @cancel="closeModal"
-    @close="closeModal"
+    @cancel="closeModals"
+    @close="closeModals"
     @save="save"
   >
     <div class="field">
@@ -95,6 +115,14 @@ onBeforeMount(() => fetchColors());
       </div>
     </div>
   </CreationModal>
+  <ConfirmationModal @cancel="closeModals" @confirm="confirmRemoving">
+    <p>You will remove the color : {{ colorToRemove?.name }}</p>
+    <article class="message is-danger" v-if="!!reason">
+      <div class="message-body">
+        {{ reason }}
+      </div>
+    </article>
+  </ConfirmationModal>
   <div class="mt-2">
     <table class="table is-fullwidth" v-if="listOfColors.data.length">
       <thead>
@@ -113,7 +141,7 @@ onBeforeMount(() => fetchColors());
           <th>{{ color.name }}</th>
           <th>{{ color.hex }}</th>
           <th>
-            <button class="button is-danger">
+            <button class="button is-danger" @click="() => removeColor(color)">
               <span class="icon">
                 <font-awesome-icon icon="fa-solid fa-trash" />
               </span>
