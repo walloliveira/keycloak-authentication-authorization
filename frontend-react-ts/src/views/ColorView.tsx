@@ -1,16 +1,12 @@
-import {
-  ChangeEvent,
-  ChangeEventHandler,
-  FormEvent,
-  useEffect,
-  useState,
-} from "react";
-import { ListOfColors } from "../domains/ListOfColors";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import GetColorService from "../services/GetColorService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ChangeEvent, useEffect, useState } from "react";
 import CreationModal from "../components/CreationModal";
+import { Color } from "../domains/Color";
+import { ListOfColors } from "../domains/ListOfColors";
 import { NewColor } from "../domains/NewColor";
+import CreateColorService from "../services/CreateColorService";
+import GetColorService from "../services/GetColorService";
 
 const ColorView = () => {
   const [listOfColors, setListOfColors] = useState<ListOfColors>({
@@ -21,17 +17,22 @@ const ColorView = () => {
     name: "",
     hex: "",
   });
+  const [colorsCreatedNow, setColorsCreatedNow] = useState<Color[]>([]);
 
-  useEffect(() => {
+  const fetchData = () =>
     GetColorService.list().then((value) => setListOfColors(value));
-  }, []);
-
-  const openCreationModal = () => setIsModalOpened(true);
 
   const save = () => {
-    console.warn({ newColor });
+    CreateColorService.perform(newColor).then((color) => {
+      setNewColor(() => ({
+        name: "",
+        hex: "",
+      }));
+      setIsModalOpened(false);
+      setColorsCreatedNow((pre) => [...pre, color]);
+      fetchData();
+    });
   };
-  const closeModal = () => setIsModalOpened(false);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -40,6 +41,22 @@ const ColorView = () => {
       [name]: value,
     }));
   };
+
+  const openCreationModal = () => setIsModalOpened(true);
+
+  const closeModal = () => setIsModalOpened(false);
+
+  const wasColorAddedNow = (color: Color) =>
+    !!colorsCreatedNow.find((c) => c.id === color.id);
+
+  const getSelectedColorClass = (color: Color) => {
+    return wasColorAddedNow(color) ? "is-selected" : "";
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   let content;
   if (listOfColors.data.length) {
     content = (
@@ -52,10 +69,10 @@ const ColorView = () => {
           </tr>
         </thead>
         <tbody>
-          {listOfColors.data.map(({ name, hex }) => (
-            <tr key={name}>
-              <th>{name}</th>
-              <th>{hex}</th>
+          {listOfColors.data.map((color) => (
+            <tr key={color.id} className={getSelectedColorClass(color)}>
+              <th>{color.name}</th>
+              <th>{color.hex}</th>
               <th>
                 <button className="button is-danger">
                   <span className="icon">
