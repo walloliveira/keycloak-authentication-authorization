@@ -1,27 +1,27 @@
 import ModalContext from "../contexts/ModalContext";
 import Modal from "./Modal";
 
-interface CreationModalProps {
+interface ConfirmationModalProps {
   children: JSX.Element;
   onCancel: () => void;
-  onSave: () => void;
+  onConfirm: () => void;
 }
 
-const CreationModal = (props: CreationModalProps) => {
+const ConfirmationModal = (props: ConfirmationModalProps) => {
   return (
     <ModalContext.Consumer>
       {(context) => (
         <Modal
-          isOpen={context.isCreationOpen}
+          isOpen={context.isConfirmationOpen}
           children={props.children}
-          title="Create a new color"
+          title="Are you sure?"
           actions={
             <>
               <button className="button" onClick={props.onCancel}>
                 Cancel
               </button>
-              <button className="button is-success" onClick={props.onSave}>
-                Save
+              <button className="button is-success" onClick={props.onConfirm}>
+                Confirm
               </button>
             </>
           }
@@ -31,4 +31,4 @@ const CreationModal = (props: CreationModalProps) => {
   );
 };
 
-export default CreationModal;
+export default ConfirmationModal;
