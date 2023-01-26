@@ -57,6 +57,7 @@ const confirmRemoving = () => {
     .then(() => {
       fetchColors();
       colorToRemove.value = undefined;
+      closeModals();
     })
     .catch((r) => {
       reason.value = r;
