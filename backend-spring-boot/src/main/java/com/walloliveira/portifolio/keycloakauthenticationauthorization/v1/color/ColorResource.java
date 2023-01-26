@@ -35,7 +35,7 @@ public final class ColorResource {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id, @RequestBody NewColor newColor) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         final var colorFounded = this.repository.findById(id);
         if (colorFounded.isPresent()) {
             this.repository.remove(colorFounded.get());
