@@ -1,11 +1,11 @@
 import { ListOfColors } from "../domains/ListOfColors";
 import Http from "../plugins/Http";
 
-const list = async () => {
-  const response = await Http.get<ListOfColors>("/v1/colors");
-  return response.data;
-};
+class GetColorService {
+  async list() {
+    const response = await Http.get<ListOfColors>("/v1/colors");
+    return response.data;
+  }
+}
 
-export default {
-  list,
-};
+export default new GetColorService();
