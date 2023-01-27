@@ -1,17 +1,12 @@
-import { AxiosError } from "axios";
+import ExceptionHandler from "../decorators/ExceptionHandlerDecorator";
 import { Color } from "../domains/Color";
 import Http from "../plugins/Http";
 
-const perform = async (color: Color) => {
-  try {
+class RemoveColorService {
+  @ExceptionHandler.handleException()
+  async perform(color: Color) {
     await Http.delete(`/v1/colors/${color.id}`);
-  } catch (err) {
-    if (err instanceof AxiosError) {
-      return Promise.reject("User not authorized");
-    }
   }
-};
+}
 
-export default {
-  perform,
-};
+export default new RemoveColorService();

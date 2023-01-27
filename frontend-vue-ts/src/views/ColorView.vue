@@ -9,6 +9,7 @@ import CreateColorService from "../services/CreateColorService";
 import GetColorService from "../services/GetColorService";
 import ModalStore from "../stores/ModalStore";
 import RemoveColorService from "../services/RemoveColorService";
+import ErrorMessage from "../components/ErrorMessage.vue";
 
 const initNewColor = { name: "", hex: "" };
 
@@ -41,15 +42,24 @@ const getSelectedColorClass = (color: Color) => {
   return wasColorAddedNow(color) ? "is-selected" : "";
 };
 
+const handleError = (r: string) => {
+  reason.value = r;
+  setTimeout(() => {
+    reason.value = "";
+  }, 3000);
+};
+
 const fetchColors = () =>
   GetColorService.list().then((response) => (listOfColors.value = response));
 
 const save = () => {
-  CreateColorService.exec(newColor.value).then((color) => {
-    fetchColors();
-    colorsCreatedNow.value.push(color);
-    closeModals();
-  });
+  CreateColorService.perform(newColor.value)
+    .then((color) => {
+      fetchColors();
+      colorsCreatedNow.value.push(color);
+      closeModals();
+    })
+    .catch(handleError);
 };
 
 const confirmRemoving = () => {
@@ -59,12 +69,7 @@ const confirmRemoving = () => {
       colorToRemove.value = undefined;
       closeModals();
     })
-    .catch((r) => {
-      reason.value = r;
-      setTimeout(() => {
-        reason.value = "";
-      }, 3000);
-    });
+    .catch(handleError);
 };
 
 const removeColor = (color: Color) => {
@@ -93,36 +98,35 @@ onBeforeMount(() => fetchColors());
     @close="closeModals"
     @save="save"
   >
-    <div class="field">
-      <label class="label">Name</label>
-      <div class="control">
-        <input
-          class="input"
-          type="text"
-          v-model="newColor.name"
-          placeholder="Color's name: black"
-        />
+    <div>
+      <div class="field">
+        <label class="label">Name</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            v-model="newColor.name"
+            placeholder="Color's name: black"
+          />
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <label class="label">HEX</label>
-      <div class="control">
-        <input
-          class="input"
-          type="text"
-          v-model="newColor.hex"
-          placeholder="Color's hex: #00000"
-        />
+      <div class="field">
+        <label class="label">HEX</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            v-model="newColor.hex"
+            placeholder="Color's hex: #00000"
+          />
+        </div>
       </div>
+      <ErrorMessage :reason="reason" />
     </div>
   </CreationModal>
   <ConfirmationModal @cancel="closeModals" @confirm="confirmRemoving">
     <p>You will remove the color : {{ colorToRemove?.name }}</p>
-    <article class="message is-danger" v-if="!!reason">
-      <div class="message-body">
-        {{ reason }}
-      </div>
-    </article>
+    <ErrorMessage :reason="reason" />
   </ConfirmationModal>
   <div class="mt-2">
     <table class="table is-fullwidth" v-if="listOfColors.data.length">
