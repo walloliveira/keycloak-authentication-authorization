@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useEffect, useState } from "react";
 import ConfirmationModal from "../components/ConfirmationModal";
 import CreationModal from "../components/CreationModal";
+import ErrorMessage from "../components/ErrorMessage";
 import ModalContext from "../contexts/ModalContext";
 import { Color } from "../domains/Color";
 import { ListOfColors } from "../domains/ListOfColors";
@@ -26,19 +27,28 @@ const ColorView = () => {
   const [colorToRemove, setColorToRemove] = useState<Color>();
   const [reason, setReason] = useState("");
 
+  const handleError = (r: string) => {
+    setReason(r);
+    setTimeout(() => {
+      setReason("");
+    }, 3000);
+  };
+
   const fetchData = () =>
     GetColorService.list().then((value) => setListOfColors(value));
 
   const handleOnSave = () => {
-    CreateColorService.perform(newColor).then((color) => {
-      setNewColor(() => ({
-        name: "",
-        hex: "",
-      }));
-      setIsCreationModalOpened(false);
-      setColorsCreatedNow((pre) => [...pre, color]);
-      fetchData();
-    });
+    CreateColorService.perform(newColor)
+      .then((color) => {
+        setNewColor(() => ({
+          name: "",
+          hex: "",
+        }));
+        setIsCreationModalOpened(false);
+        setColorsCreatedNow((pre) => [...pre, color]);
+        fetchData();
+      })
+      .catch(handleError);
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -61,12 +71,7 @@ const ColorView = () => {
       .then(() => {
         setIsConfirmationModalOpened(false);
       })
-      .catch((err) => {
-        setReason(err);
-        setTimeout(() => {
-          setReason("");
-        }, 3000);
-      });
+      .catch(handleError);
   };
 
   const handleRemoveColor = (color: Color) => {
@@ -150,16 +155,13 @@ const ColorView = () => {
           />
         </div>
       </div>
+      <ErrorMessage reason={reason} />
     </>
   );
   const confirmationDeletion = (
     <>
       <p>You will remove the color : {colorToRemove?.name}</p>
-      {reason && (
-        <article className="message is-danger">
-          <div className="message-body">{reason}</div>
-        </article>
-      )}
+      <ErrorMessage reason={reason} />
     </>
   );
   return (
