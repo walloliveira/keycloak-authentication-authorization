@@ -191,3 +191,7 @@ And the color "white" with the hex value "#9999" is listed on the list of colors
 When I remove the color "white" with the hex value "#9999"
 Then the color "white" with the hex value "#9999" should not be listed on the list of colors
 ```
+
+# Next version
+
+- Make the keycloak client private
