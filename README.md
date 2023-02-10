@@ -4,8 +4,6 @@ Welcome! Keycloak authentication and authorization is a project that shows how w
 
 ## Project structure
 
----
-
 ```
 backend-spring-boot/ # Java + Spring boot + Gradle
 database/ # Postgres database service
@@ -13,6 +11,14 @@ frontend-react-ts/ # React app + Typescript
 frontend-vue-ts / # VueJS app + Typescript
 keycloak / # Keycloak service
 ```
+
+## What was used to build it?
+
+- Spring Boot
+- Vite + VueJS + Typescript
+- Vite + ReactJS + Typescript
+- Keycloak
+- Postgres Database
 
 ## Pre-install
 
@@ -24,8 +30,6 @@ The ports used on this are:
 - 8081 for ReactJS
 
 Make sure those ports are available.
-
----
 
 ### Database service
 
@@ -61,31 +65,19 @@ Go to the frontend-vue-ts's folder and create the `.env` file from the `.env.exa
 
 ## Install and run - DEV mode
 
----
-
 Use the [Docker Desktop](https://docs.docker.com/desktop/) or [Docker engine](https://docs.docker.com/engine/) to install and run.
 
-Use the [JDK 11 or latest](https://openjdk.org/projects/jdk/17/) for the backend.
+Use the [JDK 17 or latest](https://openjdk.org/install/) for the backend.
 
-Use the [NodeJS 16 or latest LTS](https://nodejs.org/en/) for the frontend.
+Use the [NodeJS 16 or LTS](https://nodejs.org/en/) for the frontend.
 
-Make sure those items above are installed executing the commands line:
-
-```command-line
-$ docker --version
-
-$ java --version
-
-$ node --version
-```
+Make sure those items above are installed.
 
 Execute the command line on the root path:
 
 ```command-line
-$ docker-compose up
+$ make install
 ```
-
-<b>Do not close the terminal after this command!</b>
 
 Next, open on your browser on [Keycloak admin](http://localhost:9091/admin)
 
@@ -112,9 +104,10 @@ Now, set up the client `development` following:
 
 ![alt text](./.assets/client-settings-on-realm.png)
 
-Create two groups (USER and ADMIN):
+Create two roles (USER and ADMIN):
 
-![alt text](./.assets/creating-group.png)
+![alt text](./.assets/creating-roles-1.png)
+![alt text](./.assets/creating-roles-2.png)
 
 Create two users (MY_USER and MY_ADMIN) and set the MY_USER to USER and MY_ADMIN to ADMIN:
 
@@ -131,8 +124,70 @@ After create the users, set the passwords for them:
 ![alt text](./.assets/updating-user-3.png)
 ![alt text](./.assets/updating-user-4.png)
 
+Last thing to do is, set the users to yours respective roles:
+![alt text](./.assets/updating-user-5.png)
+![alt text](./.assets/updating-user-6.png)
+
 Well done! Next, now you can use the Makefile to up the apps:
 
 ```
 make dev
+```
+
+## Access
+
+[VueJS](http://localhost:8080)
+
+[ReactJS](http://localhost:8081)
+
+## Stop services
+
+To stop the services, use the following command:
+
+```
+make stop
+```
+
+# Scenarios
+
+### Feature: create a new color
+
+```
+Rule: only the USER role must do that
+
+Given that I am authenticated
+And do not have the color "black" with the hex value "#0000" on the list of colors
+When I register the "black" color with the hex value "#0000"
+Then the color "black" with the hex "#0000" value should be listed on the list of colors
+```
+
+### Feature: list colors
+
+```
+Rule: only both USER and ADMIN must do that
+
+Given that I am authenticated
+And there are colors registered
+Then the colors registered should be listed on the list of colors
+```
+
+### Feature: list of color empty
+
+```
+Rule: only both USER and ADMIN must do that
+
+Given that I am authenticated
+But do not have colors registered
+Then the warning message "No colors in the system, yet! Create a new one!" should be shown
+```
+
+### Feature: delete a color
+
+```
+Rule: only ADMIN must do that
+
+Given that I am authenticated
+And the color "white" with the hex value "#9999" is listed on the list of colors
+When I remove the color "white" with the hex value "#9999"
+Then the color "white" with the hex value "#9999" should not be listed on the list of colors
 ```
